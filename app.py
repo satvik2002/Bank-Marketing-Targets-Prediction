@@ -24,46 +24,49 @@ label_mapping = {
     4: "New Customer"
 }
 
-# Page config
+# Page setup
 st.set_page_config(page_title="Customer Category Prediction", layout="centered")
 st.title("🏦 Customer Category Prediction App")
 
-st.write("Enter customer details below to predict the category or upload a CSV file.")
+# Page switcher
+page = st.radio("Choose Mode:", ["🔘 Manual Input", "📂 CSV Upload"], horizontal=True)
 
-# --------- Section 1: Manual Input ---------
-st.subheader("📋 Manual Input")
+# --------- Page 1: Manual Input ---------
+if page == "🔘 Manual Input":
+    st.subheader("📋 Manual Customer Entry")
 
-with st.form("input_form"):
-    inputs = {}
-    for feature in input_features:
-        inputs[feature] = st.number_input(f"{feature}", value=0.0)
+    with st.form("input_form"):
+        inputs = {}
+        for feature in input_features:
+            inputs[feature] = st.number_input(f"{feature}", value=0.0)
 
-    submitted = st.form_submit_button("Predict")
+        submitted = st.form_submit_button("Predict")
 
-if submitted:
-    input_df = pd.DataFrame([inputs])
-    scaled_input = scaler.transform(input_df)
-    prediction = model.predict(scaled_input)[0]
-    st.success(f"🎯 Predicted Customer Category: **{label_mapping.get(prediction, 'Unknown')}**")
+    if submitted:
+        input_df = pd.DataFrame([inputs])
+        scaled_input = scaler.transform(input_df)
+        prediction = model.predict(scaled_input)[0]
+        st.success(f"🎯 Predicted Customer Category: **{label_mapping.get(prediction, 'Unknown')}**")
 
-# --------- Section 2: CSV Upload ---------
-st.subheader("📂 Or Upload a CSV File")
+# --------- Page 2: CSV Upload ---------
+elif page == "📂 CSV Upload":
+    st.subheader("📁 Upload a CSV File for Bulk Prediction")
 
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
-if uploaded_file is not None:
-    try:
-        csv_input_df = pd.read_csv(uploaded_file)
+    if uploaded_file is not None:
+        try:
+            csv_input_df = pd.read_csv(uploaded_file)
 
-        # Check if all required features are present
-        missing_cols = set(input_features) - set(csv_input_df.columns)
-        if missing_cols:
-            st.error(f"❌ Missing columns in uploaded CSV: {', '.join(missing_cols)}")
-        else:
-            scaled_csv_input = scaler.transform(csv_input_df[input_features])
-            csv_predictions = model.predict(scaled_csv_input)
-            csv_input_df['Predicted Category'] = [label_mapping.get(pred, 'Unknown') for pred in csv_predictions]
-            st.success("✅ Prediction complete! See results below:")
-            st.dataframe(csv_input_df)
-    except Exception as e:
-        st.error(f"❌ Error processing file: {e}")
+            # Check for required columns
+            missing_cols = set(input_features) - set(csv_input_df.columns)
+            if missing_cols:
+                st.error(f"❌ Missing columns in uploaded CSV: {', '.join(missing_cols)}")
+            else:
+                scaled_csv_input = scaler.transform(csv_input_df[input_features])
+                csv_predictions = model.predict(scaled_csv_input)
+                csv_input_df['Predicted Category'] = [label_mapping.get(pred, 'Unknown') for pred in csv_predictions]
+                st.success("✅ Prediction complete! Results:")
+                st.dataframe(csv_input_df)
+        except Exception as e:
+            st.error(f"❌ Error processing file: {e}")
