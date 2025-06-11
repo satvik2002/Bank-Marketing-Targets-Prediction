@@ -6,7 +6,7 @@ import joblib
 model = joblib.load('rf_final_model.pkl')
 scaler = joblib.load('scaler.pkl')
 
-# Define features
+# Define input features
 input_features = [
     'Credit_History_Age_Months', 'Outstanding_Debt', 'Num_Credit_Inquiries', 'Interest_Rate',
     'Delay_from_due_date', 'Num_Bank_Accounts', 'Num_Credit_Card', 'Monthly_Balance',
@@ -14,7 +14,14 @@ input_features = [
     'Personal_Loan', 'Credit_Utilization_Ratio', 'Mortgage_Loan'
 ]
 
-# ss
+# Define label mapping globally (used in both manual and CSV)
+label_mapping = {
+    0: "Established Customer",
+    1: "Growing Customer",
+    2: "Legacy Customer",
+    3: "Loyal Customer",
+    4: "New Customer"
+}
 
 # --- Initialize session state ---
 if 'logged_in' not in st.session_state:
@@ -60,21 +67,20 @@ def main_app():
     if page == "🔘 Manual Input":
         st.subheader("📋 Manual Customer Entry")
         with st.form("manual_form"):
-            inputs = {feature: st.number_input(f"{feature}", value=0.0) for feature in input_features}
+            inputs = {}
+            for feature in input_features:
+                inputs[feature] = st.number_input(f"{feature}", value=0.0)
             submitted = st.form_submit_button("Predict")
+
         if submitted:
             input_df = pd.DataFrame([inputs])
             scaled_input = scaler.transform(input_df)
             prediction = model.predict(scaled_input)[0]
-            # Category labels
-            label_mapping = {
-                0: "Established Customer",
-                1: "Growing Customer",
-                2: "Legacy Customer",
-                3: "Loyal Customer",
-                4: "New Customer"
-            }
             st.success(f"🎯 Predicted Category: **{label_mapping.get(prediction, 'Unknown')}**")
+            # Optional: Show probability for all categories
+            # probs = model.predict_proba(scaled_input)[0]
+            # for i, prob in enumerate(probs):
+            #     st.write(f"{label_mapping[i]}: {prob:.2%}")
 
     # --- CSV Upload ---
     elif page == "📂 CSV Upload":
