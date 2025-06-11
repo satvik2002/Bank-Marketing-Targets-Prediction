@@ -14,14 +14,7 @@ input_features = [
     'Personal_Loan', 'Credit_Utilization_Ratio', 'Mortgage_Loan'
 ]
 
-# Category labels
-label_mapping = {
-    0: "Established Customer",
-    1: "Growing Customer",
-    2: "Legacy Customer",
-    3: "Loyal Customer",
-    4: "New Customer"
-}
+# ss
 
 # --- Initialize session state ---
 if 'logged_in' not in st.session_state:
@@ -73,6 +66,14 @@ def main_app():
             input_df = pd.DataFrame([inputs])
             scaled_input = scaler.transform(input_df)
             prediction = model.predict(scaled_input)[0]
+            # Category labels
+            label_mapping = {
+                0: "Established Customer",
+                1: "Growing Customer",
+                2: "Legacy Customer",
+                3: "Loyal Customer",
+                4: "New Customer"
+            }
             st.success(f"🎯 Predicted Category: **{label_mapping.get(prediction, 'Unknown')}**")
 
     # --- CSV Upload ---
