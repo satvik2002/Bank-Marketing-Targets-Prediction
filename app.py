@@ -8,9 +8,10 @@ model = joblib.load('rf_final_model.pkl')
 scaler = joblib.load('scaler.pkl')
 
 # Define input features (replace with your actual features)
-input_features = ['Loan_Amount', 'EMI', 'Credit_Inquiries', 'Credit_History_Age_Months',
-                  'Outstanding_Debt', 'Delay_from_due_date', 'Monthly_Income', 'Total_EMIs',
-                  'Utilization_Ratio', 'Num_Credit_Cards']
+input_features = ['Credit_History_Age_Months', 'Outstanding_Debt', 'Num_Credit_Inquiries', 'Interest_Rate',
+                  'Delay_from_due_date', 'Num_Bank_Accounts', 'Num_Credit_Card', 'Monthly_Balance',
+                  'Annual_Income', 'Age', 'Num_of_Delayed_Payment', 'Monthly_Inhand_Salary', 'Personal_Loan',
+                  'Credit_Utilization_Ratio', 'Mortgage_Loan']
 
 st.set_page_config(page_title="Customer Category Prediction", layout="centered")
 st.title("🏦 Customer Category Prediction App")
