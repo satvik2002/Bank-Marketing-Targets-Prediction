@@ -33,7 +33,7 @@ def login():
             st.session_state.logged_in = True
             st.session_state.username = username
             st.success("✅ Login successful!")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("❌ Invalid credentials. Try again.")
 
@@ -42,7 +42,7 @@ def logout():
     st.session_state.logged_in = False
     st.session_state.username = ''
     st.success("✅ Logged out successfully.")
-    st.experimental_rerun()
+    st.rerun()
 
 # --- Main App after login ---
 def main_app():
