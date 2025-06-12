@@ -2,26 +2,18 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load model and scaler
+# Load model, scaler, and label encoder
 model = joblib.load('rf_final_model.pkl')
 scaler = joblib.load('scaler.pkl')
+label_encoder = joblib.load('LabelEncoder.pkl')  # Load LabelEncoder
 
-# Define features
+# Define features used for input
 input_features = [
     'Credit_History_Age_Months', 'Outstanding_Debt', 'Num_Credit_Inquiries', 'Interest_Rate',
     'Delay_from_due_date', 'Num_Bank_Accounts', 'Num_Credit_Card', 'Monthly_Balance',
     'Annual_Income', 'Age', 'Num_of_Delayed_Payment', 'Monthly_Inhand_Salary',
     'Personal_Loan', 'Credit_Utilization_Ratio', 'Mortgage_Loan'
 ]
-
-# Category labels
-label_mapping = {
-    0: "Established Customer",
-    1: "Growing Customer",
-    2: "Legacy Customer",
-    3: "Loyal Customer",
-    4: "New Customer"
-}
 
 # --- Initialize session state ---
 if 'logged_in' not in st.session_state:
@@ -41,7 +33,7 @@ def login():
             st.session_state.logged_in = True
             st.session_state.username = username
             st.success("✅ Login successful!")
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error("❌ Invalid credentials. Try again.")
 
@@ -50,7 +42,7 @@ def logout():
     st.session_state.logged_in = False
     st.session_state.username = ''
     st.success("✅ Logged out successfully.")
-    st.rerun()
+    st.experimental_rerun()
 
 # --- Main App after login ---
 def main_app():
@@ -73,7 +65,11 @@ def main_app():
             input_df = pd.DataFrame([inputs])
             scaled_input = scaler.transform(input_df)
             prediction = model.predict(scaled_input)[0]
-            st.success(f"🎯 Predicted Category: **{label_mapping.get(prediction, 'Unknown')}**")
+
+            # Decode label using label encoder
+            pred_label = label_encoder.inverse_transform([prediction])[0]
+
+            st.success(f"🎯 Predicted Customer Category: **{pred_label}**")
 
     # --- CSV Upload ---
     elif page == "📂 CSV Upload":
@@ -88,7 +84,8 @@ def main_app():
                 else:
                     scaled = scaler.transform(csv_df[input_features])
                     predictions = model.predict(scaled)
-                    csv_df['Predicted Category'] = [label_mapping.get(i, 'Unknown') for i in predictions]
+                    decoded_predictions = label_encoder.inverse_transform(predictions)
+                    csv_df['Predicted Category'] = decoded_predictions
                     st.success("✅ Prediction complete")
                     st.dataframe(csv_df)
             except Exception as e:
