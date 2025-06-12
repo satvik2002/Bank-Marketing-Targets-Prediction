@@ -4,8 +4,8 @@ import numpy as np
 import joblib
 
 # Load the saved model and scaler
-model = joblib.load('rf_final_model.pkl')
-scaler = joblib.load('scaler.pkl')
+model = joblib.load('rf_final_model1.pkl')
+scaler = joblib.load('scaler1.pkl')
 
 # Define input features (replace with your actual features)
 input_features = ['Credit_History_Age_Months', 'Outstanding_Debt', 'Num_Credit_Inquiries', 'Interest_Rate',
