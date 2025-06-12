@@ -3,9 +3,9 @@ import pandas as pd
 import joblib
 
 # Load model, scaler, and label encoder
-model = joblib.load('rf_final_model.pkl')
-scaler = joblib.load('scaler.pkl')
-label_encoder = joblib.load('LabelEncoder.pkl')  # Load LabelEncoder
+model = joblib.load('rf_final_model1.pkl')
+scaler = joblib.load('scaler1.pkl')
+label_encoder = joblib.load('LabelEncoder1.pkl')  # Load LabelEncoder
 
 # Define features used for input
 input_features = [
